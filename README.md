@@ -1,22 +1,40 @@
 # habit-analytics-platform
-Habit analytics backend built with FastAPI, PostgreSQL and pandas
+Habit analytics backend built with FastAPI.
 
-# Clone repo
-git clone https://github.com/Warghz/habit-analytics-platform.git
+## Clone repo
+```bash
+git clone https://github.com/Warghz/habit-analytics-platform.git 
 cd habit-analytics-platform
+```
+## Create and activate virtual environment
 
-# Create and activate virualenv
+```bash
 python -m venv venv
 venv\Scripts\activate
+```
 
-# Install requirements
+## Install requirements
+
+```bash
 pip install -r requirements.txt
+```
 
-# Run develepment server
+## Run development server
+
+```bash
 uvicorn app.main:app --reload
-## server will run at:
-http://127.0.0.1:8000
+```
 
-# API Documentation
-## UI swagger:
+### server will run at:
+
+```text
+http://127.0.0.1:8000
+```
+
+## API Documentation
+
+Swagger UI:
+
+```text
 http://127.0.0.1:8000/docs
+```
