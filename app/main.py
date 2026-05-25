@@ -1,59 +1,70 @@
-from fastapi import FastAPI
+from typing import Optional
+from fastapi import FastAPI, Response, status, HTTPException
+from fastapi.params import Body
 from pydantic import BaseModel
+from random import randrange
+
 
 app = FastAPI()
 
-
-habits = []
-next_id = 1
-
-@app.get("/")
-def root():
-    return {"message": "Habit Analytics API is running"}
+my_habits = [
+    {"title": "title of post 1", "content": "content of post 1", "id": 1234},
+    {"title": "drink water", "content": "drink water every day", "id": 2}
+]
 
 
-@app.get("/health")
-def health():
-    return {'status': 'ok'}
+def find_habit(id: int):
+    for habit in my_habits:
+        if habit['id'] == id:
+            return habit
 
+def find_habit_index(id: int):
+    for i, habit in enumerate(my_habits):
+        if id == habit['id']:
+            return i
 
 class Habit(BaseModel):
-    name: str
+    title: str
+    content: str
+    published: bool = True
+    rating: Optional[int]
+
+@app.get('/')
+def root():
+    return {"message": "welcome to my API"}
 
 
-@app.post('/habits')
-def create_habit(habit: Habit):
-    global next_id
-
-    new_habit = {
-        'id': next_id,
-        'name': habit.name
-    }
-
-    habits.append(new_habit)
-    next_id += 1
-
-    return {"message": "Habit created",
-            "habit": new_habit
-    }
-
-
-@app.get("/habits")
+@app.get('/posts')
 def get_habits():
-    return {
-        "count": len(habits),
-        "habits": habits
-    }
+    return {"data": my_habits}
 
-@app.delete("/habits/{habit_id}")
-def delete_habit(habit_id: int):
-    for habit in habits:
-        if habit['id'] == habit_id:
-            habits.remove(habit)
-            return {
-                'message': "Habit deleted",
-                'id': habit_id
-            }
-    return {
-        "message": "Habit not found"
-    }
+
+@app.get('/posts/{id}')
+def get_habit(id: int):
+    habit = find_habit(id)
+    if not habit:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                             detail=f"habit with {id} is not exist")
+
+    return {"habit_name": habit['title']}
+
+
+@app.post("/posts", status_code=status.HTTP_201_CREATED)
+def create_habit(habit: Habit):
+    habit_dict = habit.dict()
+    habit_dict['id'] = randrange(0, 100000000)
+    my_habits.append(habit_dict)
+    return {'data': habit_dict}
+
+
+@app.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_habit(id: int):
+    index = find_habit_index(id)
+    if index is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"habit with id: {id} is not found"
+        )
+
+    my_habits.pop(index)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
