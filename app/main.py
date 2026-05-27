@@ -68,3 +68,19 @@ def delete_habit(id: int):
 
     my_habits.pop(index)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@app.put("/posts/{id}")
+def put_habit(id: int, habit: Habit):
+    index = find_habit_index(id)
+
+    if index is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Habit with id: {id} not found"
+        )
+
+    habit_dict = habit.dict()
+    habit_dict['id'] = id
+    my_habits[index] = habit_dict
+    return {'data': habit_dict}
