@@ -1,13 +1,23 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from psycopg_pool import AsyncConnectionPool
 
-DATABASE_URL = "sqlite:///./app.db"
+DATABASE_URL = "postgresql://postgres:5665@localhost:5432/fastapi"
 
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}
+pool = AsyncConnectionPool(
+    conninfo=DATABASE_URL,
+    min_size=1,
+    max_size=10,
+    open=False
 )
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base = declarative_base()
+async def open_db():
+    await pool.open()
+
+
+async def close_db():
+    await pool.close()
+
+
+async def get_connection():
+    async with pool.connection() as conn:
+        yield conn
