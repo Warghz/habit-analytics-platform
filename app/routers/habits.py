@@ -1,13 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from psycopg import AsyncConnection
+# from psycopg import AsyncConnection # TO DO: ПОНЯТЬ ПОЧЕМУ НЕ ИСПОЛЬЗУЕМ
 from psycopg.rows import dict_row
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.schemas import HabitOut, HabitCreate, HabitUpdate
-from app.database import get_connection
+from ..database import get_session
 
 router = APIRouter()
 
 @router.get('/habits', response_model=list[HabitOut])
-async def get_habits(conn: AsyncConnection = Depends(get_connection)):
+async def get_habits(conn: AsyncSession = Depends(get_session)):
 
     async with conn.cursor(row_factory=dict_row) as cur:
         await cur.execute("""

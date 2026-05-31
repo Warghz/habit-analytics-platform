@@ -1,23 +1,17 @@
-from psycopg_pool import AsyncConnectionPool
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 
-DATABASE_URL = "postgresql://postgres:5665@localhost:5432/fastapi"
+DATABASE_URL = ("postgresql+psycopg_async://postrgres:5665@localhost/habits")
 
-pool = AsyncConnectionPool(
-    conninfo=DATABASE_URL,
-    min_size=1,
-    max_size=10,
-    open=False
+engine = create_async_engine(
+    DATABASE_URL,
+    echo=True
 )
 
+SessionLocal = async_sessionmaker(
+    engine,
+    expire_on_commit=False
+)
 
-async def open_db():
-    await pool.open()
-
-
-async def close_db():
-    await pool.close()
-
-
-async def get_connection():
-    async with pool.connection() as conn:
-        yield conn
+async def get_session():
+    async with SessionLocal() as session:
+        yield session

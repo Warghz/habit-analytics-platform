@@ -1,23 +1,23 @@
 from fastapi import FastAPI
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.routers import habits_router
-from .database import open_db, close_db
+from .database import engine, get_session
 from contextlib import asynccontextmanager
 
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    print("Starting up...")
-    await open_db()
     yield
-    print("Shutting down...")
-    await close_db()
+    await engine.dispose()
 
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(habits_router)
 
-@app.get('/')
-def root():
+@app.get('/test-db')
+async def test_db(
+        session: AsyncSession = Depends(get_session)
+):
     return {"message": "OK"}
 
 
