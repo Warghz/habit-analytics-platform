@@ -21,8 +21,13 @@ async def get_habit_by_id(
         habit_id: int,
         session: AsyncSession = Depends(get_session)
 ):
-    result = await session.execute(select(Habit.id == habit_id))
-    habit = result.scalar_one()
+    result = await session.execute(
+        select(Habit).where(Habit.id == habit_id)
+    )
+    habit = result.scalar_one_or_none()
+
+    if habit is None:
+        raise HTTPException(status_code=404, detail="Habit not found.")
 
     return habit
 
@@ -64,7 +69,7 @@ async def put_habit(
         session: AsyncSession = Depends(get_session)
 ):
         result = await session.execute(
-            select(Habit).whete(Habit.id == habit_id)
+            select(Habit).where(Habit.id == habit_id)
         )
         habit = result.scalar_one_or_none()
 
@@ -73,10 +78,10 @@ async def put_habit(
                 status_code=status.HTTP_404_NOT_FOUND, detail=f'Error: habit not found'
             )
 
-        for key, value in habit_data.model_dump().items():
+        for key, value in habit_data.model_dump(exclude_unset=True).items():
             setattr(habit, key, value)
 
         await session.commit()
-        await session.refresh()
+        await session.refresh(habit)
 
         return habit
