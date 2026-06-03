@@ -1,10 +1,11 @@
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
-DATABASE_URL = ("postgresql+psycopg_async://postrgres:5665@localhost/habits")
+DATABASE_URL = DATABASE_URL = "postgresql+asyncpg://postgres:5665@localhost/fastapi"
 
 engine = create_async_engine(
     DATABASE_URL,
-    echo=True
+    echo=True,
+    pool_pre_ping=True,
 )
 
 SessionLocal = async_sessionmaker(

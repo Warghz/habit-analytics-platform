@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.routers import habits_router
 from .database import engine, get_session
