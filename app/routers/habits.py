@@ -1,13 +1,16 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select, update, delete
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from ..models import Habit
-from app.schemas import HabitOut, HabitCreate, HabitUpdate
+from app.models.habits import Habit
+from app.schemas.habits import HabitOut, HabitCreate, HabitUpdate
 from ..database import get_session
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/habits",
+    tags=['habits']
+)
 
-@router.get('/habits', response_model=list[HabitOut])
+@router.get('/', response_model=list[HabitOut])
 async def get_habits(session: AsyncSession = Depends(get_session)):
 
     result = await session.execute(select(Habit))
@@ -16,7 +19,7 @@ async def get_habits(session: AsyncSession = Depends(get_session)):
     return habits
 
 
-@router.get('/habits/{habit_id}', response_model=HabitOut)
+@router.get('/{habit_id}', response_model=HabitOut)
 async def get_habit_by_id(
         habit_id: int,
         session: AsyncSession = Depends(get_session)
@@ -32,7 +35,7 @@ async def get_habit_by_id(
     return habit
 
 
-@router.post("/habits", response_model=HabitOut, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=HabitOut, status_code=status.HTTP_201_CREATED)
 async def create_habit(
         habit: HabitCreate,
         session: AsyncSession = Depends(get_session)
@@ -44,7 +47,7 @@ async def create_habit(
     return db_habit
 
 
-@router.delete("/habits/{habit_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{habit_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_habit(
         habit_id: int,
         session: AsyncSession = Depends(get_session)
@@ -62,7 +65,7 @@ async def delete_habit(
     await session.commit()
 
 
-@router.put("/habits/{habit_id}", response_model=HabitOut)
+@router.put("/{habit_id}", response_model=HabitOut)
 async def put_habit(
         habit_id: int,
         habit_data: HabitUpdate,

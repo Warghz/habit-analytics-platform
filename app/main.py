@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.routers import habits_router
+from app.routers import users_router
 from .database import engine, get_session
 from contextlib import asynccontextmanager
 
@@ -13,6 +14,7 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(habits_router)
+app.include_router(users_router)
 
 @app.get('/test-db')
 async def test_db(

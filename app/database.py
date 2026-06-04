@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-
-DATABASE_URL = DATABASE_URL = "postgresql+asyncpg://postgres:5665@localhost/fastapi"
+from sqlalchemy.orm import DeclarativeBase
+from core.config import DATABASE_URL
 
 engine = create_async_engine(
     DATABASE_URL,
@@ -16,3 +16,6 @@ SessionLocal = async_sessionmaker(
 async def get_session():
     async with SessionLocal() as session:
         yield session
+
+class Base(DeclarativeBase):
+    pass

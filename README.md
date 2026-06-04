@@ -38,3 +38,20 @@ Swagger UI:
 ```text
 http://127.0.0.1:8000/docs
 ```
+
+## Structure
+
+```text
+app/
+├── core/
+│ ├── config.py
+│ ├── security.py
+│ └── dependencies.py
+├── routers/
+│ └── auth.py
+├── services/
+│ └── auth_service.py
+├── models/
+├── schemas/
+└── utils/
+```

@@ -2,10 +2,7 @@ from datetime import datetime
 from sqlalchemy import Integer, String, SMALLINT, Boolean, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
-
-
-class Base(DeclarativeBase):
-    pass
+from app.database import Base
 
 class Habit(Base):
     __tablename__ = "habits"
