@@ -20,7 +20,6 @@ class User(Base):
         nullable=False
     )
 
-    habits: Mapped[list["Habit"]] = relationship(back_populates='user')
-
+    habits = relationship("Habit", back_populates="user")
 
 

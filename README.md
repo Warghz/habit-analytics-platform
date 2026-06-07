@@ -43,15 +43,24 @@ http://127.0.0.1:8000/docs
 
 ```text
 app/
+├──main.py
+├──database.py
+├──test.py
 ├── core/
 │ ├── config.py
 │ ├── security.py
 │ └── dependencies.py
+├──models/
+│ ├── habits.py
+│ ├── users.py
 ├── routers/
+│ ├── habits.py
+│ ├── users.py
 │ └── auth.py
+├──schemas/
+│ ├── habits.py
+│ ├── users.py
 ├── services/
 │ └── auth_service.py
-├── models/
-├── schemas/
 └── utils/
 ```

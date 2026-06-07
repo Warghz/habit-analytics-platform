@@ -19,5 +19,4 @@ class Habit(Base):
     must_have: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    user: Mapped["User"] = relationship("User", backref="habits")
-
+    user = relationship("User", back_populates="habits")

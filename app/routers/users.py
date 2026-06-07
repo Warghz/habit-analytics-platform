@@ -6,7 +6,7 @@ from sqlalchemy import select
 from app.schemas.users import UserCreate, UserOut
 from app.models.users import User
 from app.database import get_session
-from core.security import hash_password
+from app.core.security import hash_password
 
 router = APIRouter(
     prefix="/users",
