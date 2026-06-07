@@ -1,7 +1,11 @@
 from datetime import datetime
-from sqlalchemy.orm import Mapped, mapped_column
+from typing import TYPE_CHECKING
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import DateTime, func
 from app.database import Base
+
+if TYPE_CHECKING:
+    from app.models.habits import Habit
 
 class User(Base):
     __tablename__ = "users"
@@ -15,6 +19,8 @@ class User(Base):
         server_default=func.now(),
         nullable=False
     )
+
+    habits: Mapped[list["Habit"]] = relationship(back_populates='user')
 
 
 
