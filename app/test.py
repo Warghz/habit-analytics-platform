@@ -1,5 +1,14 @@
 import asyncpg
 import asyncio
+from app.models.users import User
+from app.core.security import get_current_user
+from fastapi import APIRouter, Depends
+from app.schemas.users import UserOut
+
+router = APIRouter(
+    tags=['test']
+)
+
 
 async def test():
     conn = await asyncpg.connect(
@@ -12,4 +21,9 @@ async def test():
     print("CONNECTED OK")
     await conn.close()
 
-asyncio.run(test())
+
+@router.get('/me', response_model=UserOut)
+async def me(
+        current_user: User = Depends(get_current_user)
+):
+    return current_user

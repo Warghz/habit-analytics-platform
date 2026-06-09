@@ -1,8 +1,10 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.routers import users_router, habits_router, auth_router
+from app.test import router as test_routers
 from .database import engine, get_session
 from contextlib import asynccontextmanager
+
 
 
 @asynccontextmanager
@@ -15,6 +17,7 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(habits_router)
 app.include_router(users_router)
 app.include_router(auth_router)
+app.include_router(test_routers)
 
 @app.get('/test-db')
 async def test_db(
