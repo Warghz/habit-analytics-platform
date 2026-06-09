@@ -7,6 +7,8 @@ from app.schemas.users import UserCreate, UserOut
 from app.models.users import User
 from app.database import get_session
 from app.core.security import hash_password
+from app.core.security import get_current_user
+
 
 router = APIRouter(
     prefix="/users",
