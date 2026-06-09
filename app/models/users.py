@@ -1,6 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Boolean
 from sqlalchemy import DateTime, func
 from app.database import Base
 
@@ -19,6 +20,8 @@ class User(Base):
         server_default=func.now(),
         nullable=False
     )
+
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
 
     habits = relationship("Habit", back_populates="user")
 
