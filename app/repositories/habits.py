@@ -43,7 +43,7 @@ class HabitRepository:
             session: AsyncSession,
             habit_id: int,
             user_id: int
-    ) -> Habit:
+    ) -> Habit | None:
         result = await session.execute(
             select(Habit).where(
                 Habit.id == habit_id,
@@ -52,6 +52,7 @@ class HabitRepository:
         )
         habit = result.scalar_one_or_none()
         return habit
+
 
     @staticmethod
     async def delete_habits(
