@@ -3,10 +3,13 @@ from sqlalchemy import String, SMALLINT, Boolean, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     from app.models.users import User
+
+if TYPE_CHECKING:
+    from app.models.habit_logs import HabitLog
 
 class Habit(Base):
     __tablename__ = "habits"
@@ -20,3 +23,8 @@ class Habit(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="habits")
+    logs: Mapped[List["HabitLog"]] = relationship(
+        "HabitLog",
+        back_populates="habit",
+        cascade="all, delete-orphan"
+    )
