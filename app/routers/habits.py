@@ -3,6 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.habits import Habit
 from app.schemas.habits import HabitOut, HabitCreate, HabitUpdate
+from app.core.exceptions import HabitNotFoundError
 from ..database import get_session
 from app.models.users import User
 from app.core.dependencies import get_current_user
@@ -28,7 +29,12 @@ async def get_habit_by_id(
         session: AsyncSession = Depends(get_session),
         current_user: User = Depends(get_current_user)
 ):
-    return await HabitService.get_habits_by_id(session, habit_id, current_user.id)
+    try:
+        return await HabitService.get_habits_by_id(session, habit_id, current_user.id)
+
+    except HabitNotFoundError:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Habit not found.")
+
 
 
 @router.post("/", response_model=HabitOut, status_code=status.HTTP_201_CREATED)
@@ -37,7 +43,12 @@ async def create_habit(
         session: AsyncSession = Depends(get_session),
         current_user: User = Depends(get_current_user)
 ):
-    return await HabitService.create_habits(session, current_user.id, habit)
+    habit = await HabitService.create_habits(session, current_user.id, habit)
+
+    if not habit:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Habit already exists or invalid data.")
+
+    return habit
 
 
 @router.delete("/{habit_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -51,7 +62,7 @@ async def delete_habit(
     if habit is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Habit not found.')
 
-
+    return
 
 
 @router.put("/{habit_id}", response_model=HabitOut)

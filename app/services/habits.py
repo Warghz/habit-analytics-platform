@@ -4,7 +4,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.habits import Habit
 from app.schemas.habits import HabitUpdate, HabitCreate
 from fastapi import HTTPException, status
-
+from app.repositories.habits import HabitRepository
+from app.core.exceptions import HabitNotFoundError
 
 class HabitService:
 
@@ -15,32 +16,17 @@ class HabitService:
             data: HabitCreate
     ):
         try:
-            data_dict = data.model_dump(exclude_unset=True)
-
-            habit = Habit(
-                **data_dict,
-                user_id=user_id
-            )
-            session.add(habit)
-            await session.commit()
-            await session.refresh(habit)
-
-            return habit
+            result = await HabitRepository.create_habits(session, user_id, data)
+            return result
 
         except IntegrityError:
-            await session.rollback()
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='Habit already exists or invalid data.'
-            )
+            # business-solution
+            return None
 
 
     @staticmethod
     async def get_all_habits(session: AsyncSession, user_id: int):
-        result = await session.execute(
-            select(Habit).where(Habit.user_id == user_id)
-        )
-        return result.scalars().all()
+        return await HabitRepository.get_all_habits(session, user_id)
 
 
     @staticmethod
@@ -49,37 +35,17 @@ class HabitService:
             habit_id: int,
             user_id: int
     ) -> Habit | None:
-        result = await session.execute(
-            select(Habit).where(
-                Habit.id == habit_id,
-                Habit.user_id == user_id
-            )
-        )
-        habit = result.scalar_one_or_none()
+        habit = await HabitRepository.get_habits_by_id(session, habit_id, user_id)
 
         if habit is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Habit not found.")
+            raise HabitNotFoundError()
 
         return habit
 
     @staticmethod
     async def delete_habits(session: AsyncSession, habit_id: int, user_id: int) -> Habit | None:
-        result = await session.execute(
-            select(Habit).where(
-                Habit.id == habit_id,
-                Habit.user_id == user_id
-            )
-        )
+        return await HabitRepository.delete_habits(session, habit_id, user_id)
 
-        habit = result.scalar_one_or_none()
-
-        if not habit:
-            return None
-
-        await session.delete(habit)
-        await session.commit()
-
-        return habit
 
     @staticmethod
     async def update_habits(session: AsyncSession, habit_id: int, user_id: int, data: HabitUpdate) -> Habit | None:
