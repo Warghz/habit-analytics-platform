@@ -7,12 +7,14 @@ from contextlib import asynccontextmanager
 from app.core.exceptions import (
     HabitNotFoundError,
     HabitAlreadyExistsError,
-    ForbiddenError
+    ForbiddenError,
+    AlreadyCompletedTodayError
 )
 from app.core.exception_handlers import (
     habit_not_found_handler,
     habit_already_exists_handler,
-    forbidden_handler
+    forbidden_handler,
+    already_completed_handler
 )
 
 
@@ -32,6 +34,7 @@ app.include_router(admin_router)
 app.add_exception_handler(HabitAlreadyExistsError, habit_already_exists_handler)
 app.add_exception_handler(HabitNotFoundError, habit_not_found_handler)
 app.add_exception_handler(ForbiddenError, forbidden_handler)
+app.add_exception_handler(AlreadyCompletedTodayError, already_completed_handler)
 
 @app.get('/test-db')
 async def test_db(
