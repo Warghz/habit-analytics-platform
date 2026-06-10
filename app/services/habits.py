@@ -15,13 +15,7 @@ class HabitService:
             user_id: int,
             data: HabitCreate
     ):
-        try:
-            result = await HabitRepository.create_habits(session, user_id, data)
-            return result
-
-        except IntegrityError:
-            # business-solution
-            return None
+            return await HabitRepository.create_habits(session, user_id, data)
 
 
     @staticmethod
@@ -37,7 +31,7 @@ class HabitService:
     ) -> Habit | None:
         habit = await HabitRepository.get_habits_by_id(session, habit_id, user_id)
 
-        if habit is None:
+        if not habit:
             raise HabitNotFoundError()
 
         return habit

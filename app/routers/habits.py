@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from psycopg import IntegrityError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.habits import Habit
 from app.schemas.habits import HabitOut, HabitCreate, HabitUpdate
-from app.core.exceptions import HabitNotFoundError
+from app.core.exceptions import HabitNotFoundError, HabitAlreadyExistsError, ForbiddenError
 from ..database import get_session
 from app.models.users import User
 from app.core.dependencies import get_current_user
@@ -29,12 +30,7 @@ async def get_habit_by_id(
         session: AsyncSession = Depends(get_session),
         current_user: User = Depends(get_current_user)
 ):
-    try:
-        return await HabitService.get_habits_by_id(session, habit_id, current_user.id)
-
-    except HabitNotFoundError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Habit not found.")
-
+    habit = await HabitService.get_habits_by_id(session, habit_id, current_user.id)
 
 
 @router.post("/", response_model=HabitOut, status_code=status.HTTP_201_CREATED)
@@ -43,12 +39,8 @@ async def create_habit(
         session: AsyncSession = Depends(get_session),
         current_user: User = Depends(get_current_user)
 ):
-    habit = await HabitService.create_habits(session, current_user.id, habit)
-
-    if not habit:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Habit already exists or invalid data.")
-
-    return habit
+    try:
+        return await HabitService.create_habits(session, current_user.id, habit)
 
 
 @router.delete("/{habit_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -58,11 +50,6 @@ async def delete_habit(
         current_user: User = Depends(get_current_user)
 ):
     habit = await HabitService.delete_habits(session, habit_id, current_user.id)
-
-    if habit is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Habit not found.')
-
-    return
 
 
 @router.put("/{habit_id}", response_model=HabitOut)
@@ -74,7 +61,3 @@ async def put_habit(
 ):
     habit = await HabitService.update_habits(session, habit_id, current_user.id, habit_data)
 
-    if habit is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Habit not found.')
-
-    return habit

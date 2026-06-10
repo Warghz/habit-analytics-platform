@@ -19,10 +19,13 @@ class HabitRepository:
         habit = Habit(**data_dict, user_id=user_id)
 
         session.add(habit)
-        await session.commit()
-        await session.refresh(habit)
-
-        return habit
+        try:
+            await session.commit()
+            await session.refresh(habit)
+            return habit
+        except IntegrityError:
+            await session.rollback()
+            raise
 
     @staticmethod
     async def get_all_habits(
