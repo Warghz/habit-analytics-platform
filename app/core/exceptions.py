@@ -1,4 +1,4 @@
-
+#habtis
 class AppException(Exception):
     """Base app exception"""
     detail: str = "Application error"
@@ -13,4 +13,9 @@ class HabitAlreadyExistsError(AppException):
 
 
 class ForbiddenError(AppException):
+    pass
+
+#habitlog
+
+class AlreadyCompletedTodayError(Exception):
     pass
