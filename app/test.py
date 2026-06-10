@@ -1,7 +1,7 @@
 import asyncpg
 import asyncio
 from app.models.users import User
-from app.core.security import get_current_user
+from app.core.dependencies import get_current_user
 from fastapi import APIRouter, Depends
 from app.schemas.users import UserOut
 

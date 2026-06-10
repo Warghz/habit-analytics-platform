@@ -5,8 +5,8 @@ from app.models.habits import Habit
 from app.schemas.habits import HabitOut, HabitCreate, HabitUpdate
 from ..database import get_session
 from app.models.users import User
-from core.dependencies import get_current_user
-from services.habits import HabitService
+from app.core.dependencies import get_current_user
+from app.services.habits import HabitService
 
 router = APIRouter(
     prefix="/habits",
@@ -46,7 +46,12 @@ async def delete_habit(
         session: AsyncSession = Depends(get_session),
         current_user: User = Depends(get_current_user)
 ):
-    return await HabitService.delete_habits(session, habit_id, current_user.id)
+    habit = await HabitService.delete_habits(session, habit_id, current_user.id)
+
+    if habit is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Habit not found.')
+
+
 
 
 @router.put("/{habit_id}", response_model=HabitOut)
@@ -56,4 +61,9 @@ async def put_habit(
         session: AsyncSession = Depends(get_session),
         current_user: User = Depends(get_current_user)
 ):
-        return await HabitService.update_habits(session, habit_id, current_user.id, habit_data)
+    habit = await HabitService.update_habits(session, habit_id, current_user.id, habit_data)
+
+    if habit is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Habit not found.')
+
+    return habit

@@ -14,7 +14,7 @@ router = APIRouter(
 
 @router.get('/users')
 async def get_all_users(
-        session: AsyncSession = Depends(get_session()),
+        session: AsyncSession = Depends(get_session),
         admin: User = Depends(require_admin)
 ):
     result = await session.execute(select(User))

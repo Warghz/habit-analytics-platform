@@ -1,8 +1,9 @@
+from psycopg import IntegrityError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.habits import Habit
 from app.schemas.habits import HabitUpdate, HabitCreate
-
+from fastapi import HTTPException, status
 
 
 class HabitService:
@@ -13,15 +14,25 @@ class HabitService:
             user_id: int,
             data: HabitCreate
     ):
-        data_dict = data.model_dump(exclude_unset=True)
+        try:
+            data_dict = data.model_dump(exclude_unset=True)
 
-        habit = Habit(
-            **data_dict,
-            user_id=user_id
-        )
-        session.add(habit)
-        await session.commit()
-        await session.refresh(habit)
+            habit = Habit(
+                **data_dict,
+                user_id=user_id
+            )
+            session.add(habit)
+            await session.commit()
+            await session.refresh(habit)
+
+            return habit
+
+        except IntegrityError:
+            await session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='Habit already exists or invalid data.'
+            )
 
 
     @staticmethod
@@ -44,7 +55,12 @@ class HabitService:
                 Habit.user_id == user_id
             )
         )
-        return result.scalar_one_or_none()
+        habit = result.scalar_one_or_none()
+
+        if habit is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Habit not found.")
+
+        return habit
 
     @staticmethod
     async def delete_habits(session: AsyncSession, habit_id: int, user_id: int) -> Habit | None:
