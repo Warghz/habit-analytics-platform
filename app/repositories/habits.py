@@ -5,6 +5,8 @@ from app.schemas.habits import HabitUpdate, HabitCreate, HabitOut
 from sqlalchemy import select
 from fastapi import HTTPException, status
 
+from app.core.exceptions import HabitNotFoundError
+
 
 class HabitRepository:
 
@@ -53,26 +55,8 @@ class HabitRepository:
         habit = result.scalar_one_or_none()
         return habit
 
-
     @staticmethod
-    async def delete_habits(
-            session: AsyncSession,
-            habit_id: int,
-            user_id: int
-    ) -> Habit | None:
-        result = await session.execute(
-            select(Habit).where(
-                Habit.id == habit_id,
-                Habit.user_id == user_id
-            )
-        )
-
-        habit = result.scalar_one_or_none()
-
-        if habit is None:
-            return None
-
+    async def delete(session, habit: Habit):
         await session.delete(habit)
         await session.commit()
-
         return habit
