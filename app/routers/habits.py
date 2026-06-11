@@ -30,7 +30,7 @@ async def get_habit_by_id(
         session: AsyncSession = Depends(get_session),
         current_user: User = Depends(get_current_user)
 ):
-    habit = await HabitService.get_habits_by_id(session, habit_id, current_user.id)
+    return await HabitService.get_habits_by_id(session, habit_id, current_user.id)
 
 
 @router.post("/", response_model=HabitOut, status_code=status.HTTP_201_CREATED)
@@ -39,8 +39,7 @@ async def create_habit(
         session: AsyncSession = Depends(get_session),
         current_user: User = Depends(get_current_user)
 ):
-    try:
-        return await HabitService.create_habits(session, current_user.id, habit)
+    return await HabitService.create_habits(session, current_user.id, habit)
 
 
 @router.delete("/{habit_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -49,7 +48,7 @@ async def delete_habit(
         session: AsyncSession = Depends(get_session),
         current_user: User = Depends(get_current_user)
 ):
-    habit = await HabitService.delete_habits(session, habit_id, current_user.id)
+     await HabitService.delete_habits(session, habit_id, current_user.id)
 
 
 @router.put("/{habit_id}", response_model=HabitOut)
