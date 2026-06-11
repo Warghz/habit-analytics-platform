@@ -37,9 +37,17 @@ class HabitService:
         return habit
 
     @staticmethod
-    async def delete_habits(session: AsyncSession, habit_id: int, user_id: int) -> Habit | None:
-        return await HabitRepository.delete_habits(session, habit_id, user_id)
+    async def delete_habits(session: AsyncSession, habit_id: int, user_id: int) -> Habit:
+        habit = await HabitRepository.get_habits_by_id(
+            session,
+            habit_id,
+            user_id
+        )
 
+        if not habit:
+            raise HabitNotFoundError()
+
+        result = await HabitRepository.delete(session, habit)
 
     @staticmethod
     async def update_habits(session: AsyncSession, habit_id: int, user_id: int, data: HabitUpdate) -> Habit | None:
