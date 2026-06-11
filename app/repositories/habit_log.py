@@ -39,3 +39,12 @@ class HabitLogRepository:
 
         result = await session.execute(stmt)
         return [row[0].date() for row in result.all()]
+
+    @staticmethod
+    async def get_completion_dates(session, habit_id: int) -> list[date]:
+
+        stmt = select(HabitLog.completed_date).where(HabitLog.habit_id == habit_id)
+
+        result = await session.execute(stmt)
+
+        return result.scalars().all()
