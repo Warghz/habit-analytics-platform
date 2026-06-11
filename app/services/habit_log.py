@@ -14,7 +14,7 @@ class HabitLogService:
         if not habit:
             raise HabitNotFoundError()
 
-        already_done = HabitLogRepository.exists_today(session, habit_id, user_id)
+        already_done = await HabitLogRepository.exists_today(session, habit_id, user_id)
 
         if already_done:
             raise AlreadyCompletedTodayError()
@@ -26,6 +26,7 @@ class HabitLogService:
     async def get_streak(session, habit_id: int, user_id: int):
 
         habit = await HabitRepository.get_habits_by_id(session, habit_id, user_id)
+
         if not habit:
             raise HabitNotFoundError()
 
@@ -45,4 +46,14 @@ class HabitLogService:
             else:
                 break
 
-            return streak
+        return streak
+
+    @staticmethod
+    async def get_history(session, habit_id: int, user_id: int):
+
+        habit = await HabitRepository.get_habits_by_id(session, habit_id, user_id)
+
+        if not habit:
+            raise HabitNotFoundError()
+
+        return await HabitLogRepository.get_completion_dates(session, habit_id)
