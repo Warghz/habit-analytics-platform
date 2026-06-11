@@ -6,10 +6,11 @@ from app.database import Base
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from app.models.users import User
+    from app.models.habit_logs import HabitLog
 
 if TYPE_CHECKING:
-    from app.models.habit_logs import HabitLog
+    from app.models.users import User
+
 
 class Habit(Base):
     __tablename__ = "habits"
