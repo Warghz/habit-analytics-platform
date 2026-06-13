@@ -15,7 +15,7 @@ class HabitService:
             user_id: int,
             data: HabitCreate
     ):
-            return await HabitRepository.create_habits(session, user_id, data)
+        return await HabitRepository.create_habits(session, user_id, data)
 
 
     @staticmethod
@@ -28,7 +28,7 @@ class HabitService:
             session: AsyncSession,
             habit_id: int,
             user_id: int
-    ) -> Habit | None:
+    ) -> Habit:
         habit = await HabitRepository.get_habits_by_id(session, habit_id, user_id)
 
         if not habit:
@@ -50,18 +50,13 @@ class HabitService:
         result = await HabitRepository.delete(session, habit)
 
     @staticmethod
-    async def update_habits(session: AsyncSession, habit_id: int, user_id: int, data: HabitUpdate) -> Habit | None:
-        result = await session.execute(
-            select(Habit).where(
-                Habit.id == habit_id,
-                Habit.user_id == user_id
-            )
-        )
+    async def update_habits(session: AsyncSession, habit_id: int, user_id: int, data: HabitUpdate) -> Habit:
+        result = await HabitRepository.get_habits_by_id(session, habit_id, user_id)
 
         habit = result.scalar_one_or_none()
 
         if not habit:
-            return None
+            return HabitNotFoundError()
 
         for key, value in data.model_dump(exclude_unset=True).items():
             setattr(habit, key, value)

@@ -44,7 +44,7 @@ async def get_history(
         )
     }
 
-#analytics
+"""analytics """
 
 @router.get("/{habit_id}/analytics")
 async def get_analytics(
