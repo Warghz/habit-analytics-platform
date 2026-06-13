@@ -7,8 +7,15 @@ from datetime import date
 class HabitLogRepository:
 
     @staticmethod
-    async def get_logs(session, habit_id: int):
-        stmt = select(HabitLog).where(HabitLog.habit_id == habit_id)
+    async def get_logs(session, habit_id: int, user_id: int):
+        stmt = (
+            select(HabitLog)
+            .join(Habit)
+            .where(
+                HabitLog.habit_id == habit_id,
+                Habit.user_id == user_id
+            )
+        )
         result = await session.execute(stmt)
         return result.scalars().all()
 
