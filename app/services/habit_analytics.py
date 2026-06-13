@@ -2,7 +2,6 @@ from starlette.responses import StreamingResponse
 from io import BytesIO
 
 from app.analytics.vizualization import HabitVisualization
-from app.analytics.habit_heatmap import HabitHeatmap
 from app.repositories.habit_log import HabitLogRepository
 from app.repositories.habits import HabitRepository
 from app.analytics.habit_analytics import HabitAnalytics

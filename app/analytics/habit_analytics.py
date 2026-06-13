@@ -110,7 +110,6 @@ class HabitAnalytics:
         data = df.copy()
         data["date"] = pd.to_datetime(data["date"]).dt.normalize()
 
-        # 🔥 фикс: берем ровно 1 год назад от today
         end = pd.Timestamp.today().normalize()
         start = end - pd.Timedelta(days=52 * 7 - 1)
 

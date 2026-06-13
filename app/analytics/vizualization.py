@@ -62,7 +62,7 @@ class HabitVisualization:
                 color="#24292f"
             )
 
-        ax.set_title("Habit Heatmap", fontsize=12, pad=15)
+        ax.set_title("Habit Heatmap", fontsize=12, pad=40)
 
         plt.tight_layout()
 
