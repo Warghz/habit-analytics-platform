@@ -23,7 +23,7 @@ class HabitVisualization:
                     1,
                     1,
                     facecolor=cmap(val / max_val),
-                    edgecolor="#d0d7de",  # 🔥 светлая GitHub-like сетка
+                    edgecolor="#d0d7de",
                     linewidth=0.5
                 )
                 ax.add_patch(rect)
