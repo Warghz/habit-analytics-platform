@@ -8,15 +8,12 @@ class HabitVisualization:
 
     @staticmethod
     def create_heatmap(matrix):
-        from io import BytesIO
-        import matplotlib.pyplot as plt
 
         fig, ax = plt.subplots(figsize=(16, 3))
 
         cmap = plt.cm.Greens
         max_val = max(1, matrix.values.max())
 
-        # 🟩 squares
         for y in range(7):
             for x in range(52):
                 val = matrix.iloc[y, x]
@@ -31,9 +28,6 @@ class HabitVisualization:
                 )
                 ax.add_patch(rect)
 
-        # -----------------------------
-        # AXES
-        # -----------------------------
         ax.set_xlim(0, 52)
         ax.set_ylim(0, 7)
         ax.invert_yaxis()
@@ -43,12 +37,8 @@ class HabitVisualization:
             ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         )
 
-        # ❌ убираем ось X полностью (мы добавим месяцы отдельно)
         ax.set_xticks([])
 
-        # -----------------------------
-        # MONTH LABELS (REAL FIX)
-        # -----------------------------
         start = pd.Timestamp.today().normalize() - pd.Timedelta(days=364)
 
         month_starts = []
@@ -72,9 +62,6 @@ class HabitVisualization:
                 color="#24292f"
             )
 
-        # -----------------------------
-        # TITLE (no overlap)
-        # -----------------------------
         ax.set_title("Habit Heatmap", fontsize=12, pad=15)
 
         plt.tight_layout()
