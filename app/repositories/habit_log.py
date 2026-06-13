@@ -7,6 +7,12 @@ from datetime import date
 class HabitLogRepository:
 
     @staticmethod
+    async def get_logs(session, habit_id: int):
+        stmt = select(HabitLog).where(HabitLog.habit_id == habit_id)
+        result = await session.execute(stmt)
+        return result.scalars().all()
+
+    @staticmethod
     async def exists_today(session, habit_id: int, user_id: int) -> bool:
         stmt = (
             select(HabitLog.id)
@@ -32,7 +38,7 @@ class HabitLogRepository:
         return log
 
     @staticmethod
-    async def get_completion_dates(session, habit_id: int) -> list[date]:
+    async def get_completion_at(session, habit_id: int) -> list[date]:
         stmt = select(HabitLog.completed_at).where(
             HabitLog.habit_id == habit_id
         )
