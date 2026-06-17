@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.users import User
 from app.models.habits import Habit
 from app.core.dependencies import require_admin
-from app.database import get_session
+from app.core.database import get_session
 
 router = APIRouter(
     prefix='/admin',

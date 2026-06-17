@@ -4,6 +4,13 @@ from datetime import date
 from app.repositories.habits import HabitRepository
 from app.services.habit_log import HabitLogService
 from app.repositories.habit_log import HabitLogRepository
+from app.api.main import app
+
+
+@pytest.fixture(autouse=True)
+def clear_overrides():
+    yield
+    app.dependency_overrides.clear()
 
 
 @pytest.fixture

@@ -1,11 +1,10 @@
-from typing import List
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status
 from fastapi.params import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.schemas.users import UserCreate, UserOut
+from app.schemas.users import UserOut
 from app.models.users import User
-from app.database import get_session
+from app.core.database import get_session
 from app.core.dependencies import get_current_user
 
 

@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Boolean
 from sqlalchemy import DateTime, func
-from app.database import Base
+from app.core.database import Base
 
 if TYPE_CHECKING:
-    from app.models.habits import Habit
+    pass
 
 class User(Base):
     __tablename__ = "users"

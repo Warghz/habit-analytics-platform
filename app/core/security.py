@@ -1,13 +1,6 @@
-from fastapi.params import Depends
-from fastapi import HTTPException
-from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 from jose import jwt
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.models import User
-from app.database import get_session
-from sqlalchemy import select
 
 pwd_context = CryptContext(
     schemes=['bcrypt'],

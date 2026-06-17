@@ -5,7 +5,7 @@ from sqlalchemy import select
 from app.core.security import verify_password, create_access_token
 from app.core.security import hash_password
 from app.schemas.auth import UserRegister
-from ..database import get_session
+from app.core.database import get_session
 from app.models.users import User
 from fastapi.security import OAuth2PasswordRequestForm
 

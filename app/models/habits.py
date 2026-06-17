@@ -2,14 +2,14 @@ from datetime import datetime
 from sqlalchemy import String, SMALLINT, Boolean, DateTime, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.database import Base
+from app.core.database import Base
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     from app.models.habit_logs import HabitLog
 
 if TYPE_CHECKING:
-    from app.models.users import User
+    pass
 
 
 class Habit(Base):
