@@ -48,15 +48,14 @@ class HabitService:
             raise HabitNotFoundError()
 
         result = await HabitRepository.delete(session, habit)
+        return None
 
     @staticmethod
     async def update_habits(session: AsyncSession, habit_id: int, user_id: int, data: HabitUpdate) -> Habit:
-        result = await HabitRepository.get_habits_by_id(session, habit_id, user_id)
-
-        habit = result.scalar_one_or_none()
+        habit = await HabitRepository.get_habits_by_id(session, habit_id, user_id)
 
         if not habit:
-            return HabitNotFoundError()
+            raise HabitNotFoundError()
 
         for key, value in data.model_dump(exclude_unset=True).items():
             setattr(habit, key, value)
