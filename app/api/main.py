@@ -1,8 +1,7 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.routers import users_router, habits_router, auth_router, admin_router, habit_log_router
-from app.tests.test import router as test_router
-from app.core.database import engine, get_session
+from app.core.database import engine, get_session, override_get_session
 from contextlib import asynccontextmanager
 from app.core.exceptions import (
     HabitNotFoundError,
@@ -25,10 +24,11 @@ async def lifespan(_app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+app.dependency_overrides[override_get_session] = override_get_session
+
 app.include_router(habits_router)
 app.include_router(users_router)
 app.include_router(auth_router)
-app.include_router(test_router)
 app.include_router(admin_router)
 app.include_router(habit_log_router)
 

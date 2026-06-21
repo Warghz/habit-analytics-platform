@@ -1,3 +1,4 @@
+from pydantic import Field
 import pytest
 from httpx import AsyncClient
 import httpx
@@ -5,6 +6,7 @@ from unittest.mock import AsyncMock
 from app.api.main import app
 from app.services.habits import HabitService
 from app.api.dependencies import get_habit_service
+from datetime import datetime
 
 
 @pytest.fixture
@@ -15,39 +17,76 @@ def override_service():
 
 
 @pytest.fixture
-def client():
+async def client():
     transport = httpx.ASGITransport(app=app)
 
-    return httpx.AsyncClient(
+    async with httpx.AsyncClient(
         transport=transport,
         base_url="http://test"
-    )
+    ) as ac:
+        yield ac
 
 
 class FakeHabitService:
+
     async def get_all_habits(self, session, user_id):
         return [
-            {"id": 1, "name": "ice shower"},
-            {"id": 2, "name": "gym"}
+            {
+                "id": 1,
+                "name": "ice shower",
+                "content": "energy",
+                "rating": 5,
+                "must_have": True,
+                "created_at": datetime.utcnow()
+            },
+            {
+                "id": 2,
+                "name": "gym",
+                "content": "fitness",
+                "rating": 4,
+                "must_have": False,
+                "created_at": datetime.utcnow()
+            }
         ]
 
     async def get_habits_by_id(self, session, habit_id, user_id):
-        return {"id": habit_id, "name": "ice shower"}
+        return {
+            "id": habit_id,
+            "name": "ice shower",
+            "content": "energy",
+            "rating": 5,
+            "must_have": True,
+            "created_at": datetime.utcnow()
+        }
 
     async def create_habits(self, session, user_id, habit):
-        return {"id": 10, "name": "wake early"}
+        return {
+            "id": 10,
+            "name": "wake early",
+            "content": None,
+            "rating": 0,
+            "must_have": False,
+            "created_at": datetime.utcnow()
+        }
 
     async def delete_habits(self, session, habit_id, user_id):
         return None
 
-    async def update_habits(self, session, habit_id, user_id):
-        return {"id": habit_id, "name": "cardio training"}
+    async def update_habits(self, session, habit_id, user_id, habit):
+        return {
+            "id": habit_id,
+            "name": "cardio training",
+            "content": "updated",
+            "rating": 3,
+            "must_have": False,
+            "created_at": datetime.utcnow()
+        }
 
 
 @pytest.mark.asyncio
 async def test_get_habits_route(client, override_service):
 
-    response = await client.get("/habits")
+    response = await client.get("/habits/")
 
     assert response.status_code == 200
     assert response.json() == [

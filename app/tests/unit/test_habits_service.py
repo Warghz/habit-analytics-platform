@@ -1,7 +1,6 @@
 from unittest.mock import AsyncMock, Mock
 import pytest
 from psycopg import IntegrityError
-from sqlalchemy.testing.plugin.pytestplugin import pytest_runtest_setup
 
 from app.repositories.habits import HabitRepository
 from app.services.habits import HabitService
@@ -21,11 +20,14 @@ from app.schemas.habits import HabitUpdate
     ]
 )
 async def test_get_all_habits(
+        monkeypatch,
         repo_result,
         expected_len
 ):
-    HabitRepository.get_all_habits = AsyncMock(
-        return_value=repo_result
+    monkeypatch.setattr(
+        HabitRepository,
+        "get_all_habits",
+        AsyncMock(return_value=repo_result)
     )
 
     result = await HabitService.get_all_habits(None, 1)
@@ -62,17 +64,16 @@ async def test_not_delete_habit_by_id(mock_no_habit):
 
 
 @pytest.mark.asyncio
-async def test_success_delete_habit(mock_habit_exists):
+async def test_success_delete_habit(monkeypatch, mock_habit_exists):
 
-    HabitRepository.delete = AsyncMock(
-        return_value=True
-    )
+    delete_mock = AsyncMock(return_value=True)
+    monkeypatch.setattr(HabitRepository, "delete", delete_mock)
 
     await HabitService.delete_habits(
         None, 1, 1
     )
 
-    HabitRepository.delete.assert_called_once_with(
+    delete_mock.assert_called_once_with(
         None, mock_habit_exists
     )
 
@@ -88,11 +89,15 @@ async def test_not_update_habit_by_id(mock_no_habit):
 
 
 @pytest.mark.asyncio
-async def test_success_update_habit_by_id(mock_habit_exists):
+async def test_success_update_habit_by_id(monkeypatch, mock_habit_exists):
 
     habit = mock_habit_exists
 
-    HabitRepository.get_habits_by_id = AsyncMock(return_value=habit)
+    monkeypatch.setattr(
+        HabitRepository,
+        "get_habits_by_id",
+        AsyncMock(return_value=habit)
+    )
 
     data = Mock()
     data.model_dump.return_value = {"name": "new"}
@@ -138,13 +143,12 @@ async def test_create_habit_integrity_error():
 
 
 @pytest.mark.asyncio
-async def test_create_habit_success():
+async def test_create_habit_success(monkeypatch):
 
     data = object()
 
-    HabitRepository.create_habits = AsyncMock(
-        return_value={"id": 1}
-    )
+    create_mock = AsyncMock(return_value={"id": 1})
+    monkeypatch.setattr(HabitRepository, "create_habits", create_mock)
 
     result = await HabitService.create_habits(
         None, 1, data

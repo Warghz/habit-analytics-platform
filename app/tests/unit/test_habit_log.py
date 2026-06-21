@@ -78,12 +78,15 @@ async def test_complete_habit_success(
     ]
 )
 async def test_get_streak(
+        monkeypatch,
         mock_habit_exists,
         dates,
         expected
 ):
-    HabitLogRepository.get_completion_dates = AsyncMock(
-        return_value=dates
+    monkeypatch.setattr(
+        HabitLogRepository,
+        "get_completion_dates",
+        AsyncMock(return_value=dates)
     )
 
     result = await HabitLogService.get_streak(

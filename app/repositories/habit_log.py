@@ -23,7 +23,7 @@ class HabitLogRepository:
     async def exists_today(session, habit_id: int, user_id: int) -> bool:
         stmt = (
             select(HabitLog.id)
-            .join(HabitLog.habit)
+            .join(Habit)
             .where(
                 HabitLog.habit_id == habit_id,
                 Habit.user_id == user_id,
@@ -36,7 +36,10 @@ class HabitLogRepository:
 
     @staticmethod
     async def create_log(session, habit_id: int) -> HabitLog:
-        log = HabitLog(habit_id=habit_id)
+        log = HabitLog(
+            habit_id=habit_id,
+            completed_date=date.today()
+        )
 
         session.add(log)
         await session.commit()
@@ -45,19 +48,11 @@ class HabitLogRepository:
         return log
 
     @staticmethod
-    async def get_completion_at(session, habit_id: int) -> list[date]:
-        stmt = select(HabitLog.completed_at).where(
+    async def get_completion_dates(session, habit_id: int):
+        stmt = select(HabitLog.completed_date).where(
             HabitLog.habit_id == habit_id
         )
 
         result = await session.execute(stmt)
-        return [row[0].date() for row in result.all()]
 
-    @staticmethod
-    async def get_completion_dates(session, habit_id: int) -> list[date]:
-
-        stmt = select(HabitLog.completed_date).where(HabitLog.habit_id == habit_id)
-
-        result = await session.execute(stmt)
-
-        return result.scalars().all()
+        return list(result.scalars().all())
