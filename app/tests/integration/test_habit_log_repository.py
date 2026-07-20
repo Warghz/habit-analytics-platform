@@ -3,6 +3,8 @@ from datetime import date
 from app.tests.fixtures.users import user
 from app.models.habit_logs import HabitLog
 from app.repositories.habit_log import HabitLogRepository
+from app.models.habits import Habit
+from app.models.users import User
 
 
 @pytest.mark.asyncio
@@ -59,6 +61,45 @@ async def test_get_logs(db_session, user, habit):
     )
 
     assert len(logs) == 2
+
+
+@pytest.mark.asyncio
+async def test_get_logs_filters_by_habit_owner(db_session, user, habit):
+    other_user = User(
+        email="other-owner@test.com",
+        hashed_password="fakehash"
+    )
+    db_session.add(other_user)
+    await db_session.commit()
+    await db_session.refresh(other_user)
+
+    other_habit = Habit(
+        user_id=other_user.id,
+        name="other habit",
+    )
+    db_session.add(other_habit)
+    await db_session.commit()
+    await db_session.refresh(other_habit)
+
+    db_session.add_all([
+        HabitLog(habit_id=habit.id),
+        HabitLog(habit_id=other_habit.id),
+    ])
+    await db_session.commit()
+
+    owner_logs = await HabitLogRepository.get_logs(
+        db_session,
+        habit.id,
+        user.id
+    )
+    foreign_logs = await HabitLogRepository.get_logs(
+        db_session,
+        habit.id,
+        other_user.id
+    )
+
+    assert len(owner_logs) == 1
+    assert foreign_logs == []
 
 
 @pytest.mark.asyncio

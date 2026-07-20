@@ -15,8 +15,8 @@ router = APIRouter(
 
 def short_habit(habit):
     return {
-        "id": habit["id"],
-        "name": habit["name"]
+        "id": habit["id"] if isinstance(habit, dict) else habit.id,
+        "name": habit["name"] if isinstance(habit, dict) else habit.name
     }
 
 

@@ -19,7 +19,7 @@ class HabitAnalyticsService:
         if not habit:
             raise HabitNotFoundError()
 
-        logs = await HabitLogRepository.get_logs(session, habit_id)
+        logs = await HabitLogRepository.get_logs(session, habit_id, user_id)
 
         df = HabitAnalytics.build_df(logs)
 

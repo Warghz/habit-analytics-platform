@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock
 from app.api.main import app
 from app.services.habits import HabitService
 from app.api.dependencies import get_habit_service
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 @pytest.fixture
@@ -37,7 +37,7 @@ class FakeHabitService:
                 "content": "energy",
                 "rating": 5,
                 "must_have": True,
-                "created_at": datetime.utcnow()
+                "created_at": datetime.now(timezone.utc)
             },
             {
                 "id": 2,
@@ -45,7 +45,7 @@ class FakeHabitService:
                 "content": "fitness",
                 "rating": 4,
                 "must_have": False,
-                "created_at": datetime.utcnow()
+                "created_at": datetime.now(timezone.utc)
             }
         ]
 
@@ -56,7 +56,7 @@ class FakeHabitService:
             "content": "energy",
             "rating": 5,
             "must_have": True,
-            "created_at": datetime.utcnow()
+            "created_at": datetime.now(timezone.utc)
         }
 
     async def create_habits(self, session, user_id, habit):
@@ -66,7 +66,7 @@ class FakeHabitService:
             "content": None,
             "rating": 0,
             "must_have": False,
-            "created_at": datetime.utcnow()
+            "created_at": datetime.now(timezone.utc)
         }
 
     async def delete_habits(self, session, habit_id, user_id):
@@ -79,7 +79,7 @@ class FakeHabitService:
             "content": "updated",
             "rating": 3,
             "must_have": False,
-            "created_at": datetime.utcnow()
+            "created_at": datetime.now(timezone.utc)
         }
 
 

@@ -121,7 +121,9 @@ async def test_success_update_habit_by_id(monkeypatch, mock_habit_exists):
 @pytest.mark.asyncio
 async def test_create_habit_integrity_error():
 
-    session = AsyncMock()
+    session = Mock()
+    session.commit = AsyncMock()
+    session.rollback = AsyncMock()
     data = object()
 
     session.commit.side_effect = IntegrityError(

@@ -59,6 +59,16 @@ async def test_not_auth_register(client, db_session):
 
 
 @pytest.mark.asyncio
+async def test_register_invalid_email(client):
+    response = await client.post(
+        "/auth/register",
+        json={"email": "not-email", "password": "secret123"}
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.asyncio
 async def test_success_auth_login(client, db_session):
     await create_user(db_session, "login@test.com", "secret123")
 
