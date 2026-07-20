@@ -4,7 +4,7 @@ from alembic import context
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from app.core.database import Base
-from app.core.config import DATABASE_URL
+from app.core.config import ALEMBIC_DATABASE_URL
 
 # models import (IMPORTANT for autogenerate)
 from app.models.users import User
@@ -20,8 +20,7 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    # IMPORTANT: force same DB url everywhere
-    return DATABASE_URL
+    return ALEMBIC_DATABASE_URL
 
 
 def run_migrations_offline() -> None:

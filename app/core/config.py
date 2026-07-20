@@ -2,12 +2,24 @@
 import os
 
 
-DATABASE_URL = os.getenv(
+def _normalize_database_url(url: str, driver: str) -> str:
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+
+    if url.startswith("postgresql://"):
+        return url.replace("postgresql://", f"postgresql+{driver}://", 1)
+
+    return url
+
+
+RAW_DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql+asyncpg://postgres:5665@localhost/fastapi"
+    "postgresql://postgres:5665@localhost/fastapi"
 )
 
-ALEMBIC_DATABASE_URL = os.getenv(
-    "ALEMBIC_DATABASE_URL",
-    "postgresql+psycopg://postgres:5665@localhost/fastapi"
+DATABASE_URL = _normalize_database_url(RAW_DATABASE_URL, "asyncpg")
+
+ALEMBIC_DATABASE_URL = _normalize_database_url(
+    os.getenv("ALEMBIC_DATABASE_URL", RAW_DATABASE_URL),
+    "asyncpg"
 )
